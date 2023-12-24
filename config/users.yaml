@@ -1,0 +1,13 @@
+# allows comments! <3
+users:
+  - username: sftp
+    password: sftp
+    home: /home/sftp
+    uid: 501
+    gid: 20
+
+  - username: sftp2
+    password: sftp2
+    home: /home/sftp2
+    uid: 501
+    gid: 20
