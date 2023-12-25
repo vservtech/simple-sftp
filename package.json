@@ -3,6 +3,8 @@
   "version": "1.0.0",
   "private": true,
   "scripts": {
-    "build": "docker build ."
+    "start": "bun run build && docker run -it simple-sftp",
+    "build": "docker build -t simple-sftp .",
+    "buildx": "DOCKER_BUILDKIT=1 docker build --platform linux/amd64,linux/arm64 -t simple-sftp ."
   }
 }
