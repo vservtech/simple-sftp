@@ -37,16 +37,39 @@ export async function getGroupName(gid: number): Promise<string | undefined> {
 }
 
 export async function userExists(
-  uid: number,
   username: string,
 ): Promise<boolean> {
-  try {
-    const res = await simpleExec(`id`, [`-u ${uid}`, username]);
-    console.log(res.stderr);
-    return true;
-  } catch {
+  const res = await simpleExec(`id`, [`-u`, username]);
+
+  if (res.stderr !== "") {
+    // always return false on error
+    console.error(res.stderr);
     return false;
   }
+
+  if (res.stdout.includes("unkown user")) {
+    return false;
+  }
+
+  // res.stdout does contain the user id now
+  return true;
+}
+
+export async function userIdExists(uid: number) {
+  const res = await simpleExec(`getent`, [`passwd`, `${uid}`]);
+
+  if (res.stderr !== "") {
+    // always return false on error
+    console.error(res.stderr);
+    return false;
+  }
+
+  if (res.stdout === "") {
+    // group not found, output is empty
+    return false;
+  }
+
+  return true;
 }
 
 // MAIN SECTION
@@ -83,18 +106,22 @@ async function main() {
     // simpleExec(`useradd`, [`-rm -d ${user.home} -s /bin/zsh -G sudo -u ${user.uid ?? 10001} sftp_user`])
     // CAUTION: We're on alpine here, therefore using adduser, not useradd (like on ubuntu)!
 
-    if (!user.force && user.uid && await userExists(user.uid, user.username)) {
+    user.uid = user.uid ?? 10001;
+    const userExistsBasedOnName = await userExists(user.username);
+    const userExistsBasedOnId = await userIdExists(user.uid);
+
+    if (!user.force && (userExistsBasedOnId || userExistsBasedOnName)) {
       console.log(`User ${user.username} already exists, skipping...`);
       continue;
     }
 
     if (
-      user.force && user.uid && await userExists(user.uid, user.username)
+      user.force && (userExistsBasedOnId || userExistsBasedOnName)
     ) {
       console.log(
-        `User ${user.username} already exists and force:true, deleting...`,
+        `User ${user.username} already exists, but force is true, deleting...`,
       );
-      simpleExec(`deluser`, [`${user.username}`]);
+      simpleExec(`deluser`, [user.username]);
     }
 
     if (user.gid && !(await groupExists(user.gid))) {
@@ -105,10 +132,11 @@ async function main() {
 
     // creates the user, either with predefined user.gid or with a new group with same id as the generated user
     simpleExec(`adduser`, [
-      `-h ${user.home}`,
-      `-s /bin/zsh `,
+      `-h`,
+      user.home,
+      `-s /bin/zsh`,
       user.gid ? `-G  ${getGroupName(user.gid)}` : ``,
-      `-u ${user.uid ?? 10001} ${user.username}`,
+      `-u ${user.uid} ${user.username}`,
     ]);
   }
 }
