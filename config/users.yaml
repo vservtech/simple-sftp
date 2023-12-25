@@ -1,14 +1,22 @@
 # allows comments! <3
 users:
+  - username: no_id
+    password: no_id
+    home: /home/no_id
+
+  - username: no_group_id
+    password: no_group_id
+    home: /home/no_group_id
+    uid: 10001
+
   - username: sftp
     password: sftp
     home: /home/sftp
     uid: 501
     gid: 20
 
-  - username: sftp2
-    password: sftp2
-    home: /home/sftp2
-    uid: 501
+  - username: sftp_force
+    password: sftp_force
+    home: /home/sftp_force
+    uid: 502
     gid: 20
-    force: true

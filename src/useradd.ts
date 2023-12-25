@@ -36,7 +36,7 @@ export async function getGroupName(gid: number): Promise<string | undefined> {
   return groupName;
 }
 
-export async function userExists(
+export async function userNameExists(
   username: string,
 ): Promise<boolean> {
   const res = await simpleExec(`id`, [`-u`, username]);
@@ -107,17 +107,19 @@ async function main() {
     // CAUTION: We're on alpine here, therefore using adduser, not useradd (like on ubuntu)!
 
     user.uid = user.uid ?? 10001;
-    const userExistsBasedOnName = await userExists(user.username);
+    const userExistsBasedOnName = await userNameExists(user.username);
     const userExistsBasedOnId = await userIdExists(user.uid);
 
-    if (!user.force && (userExistsBasedOnId || userExistsBasedOnName)) {
+    console.debug(`userExistsBasedOnName: ${userExistsBasedOnName}`);
+    console.debug(`userExistsBasedOnId: ${userExistsBasedOnId}`);
+    const userExists = userExistsBasedOnName || userExistsBasedOnId;
+
+    if (!user.force && userExists) {
       console.log(`User ${user.username} already exists, skipping...`);
       continue;
     }
 
-    if (
-      user.force && (userExistsBasedOnId || userExistsBasedOnName)
-    ) {
+    if (user.force && userExists) {
       console.log(
         `User ${user.username} already exists, but force is true, deleting...`,
       );

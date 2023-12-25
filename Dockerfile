@@ -8,5 +8,5 @@ COPY ./src .
 COPY ./config /config
 
 # Replace later with something that does useradd + starting sshd in one go
-# CMD [ "deno", "run", "-A", "useradd.ts"]
-CMD [ "deno", "test", "-A"]
+CMD [ "deno", "run", "-A", "useradd.ts"]
+# CMD [ "deno", "test", "-A"]
