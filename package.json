@@ -4,6 +4,8 @@
   "private": true,
   "scripts": {
     "start": "bun run build && docker run -it simple-sftp",
+    "test": "bun run build && docker exec simple-sftp deno test -A",
+    "zsh": "bun run build && docker run -it simple-sftp zsh",
     "build": "docker build -t simple-sftp .",
     "buildx": "DOCKER_BUILDKIT=1 docker build --platform linux/amd64,linux/arm64 -t simple-sftp ."
   }

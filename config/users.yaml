@@ -11,3 +11,4 @@ users:
     home: /home/sftp2
     uid: 501
     gid: 20
+    force: true
