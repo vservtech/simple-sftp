@@ -1,5 +1,10 @@
 import { simpleExec } from "https://deno.land/x/simple_exec@1.0.1/mod.ts";
-import { getGroupName, groupExists, userExists , userIdExists} from "./useradd.ts";
+import {
+  getGroupName,
+  groupExists,
+  userExists,
+  userIdExists,
+} from "./useradd.ts";
 import {
   assert,
   assertEquals,
@@ -44,3 +49,14 @@ Deno.test("userExists() - user does not exist", async () => {
   assertEquals(result, false);
 });
 
+Deno.test("userIdExists() - user ID exists", async () => {
+  const userId = 0;
+  const result = await userIdExists(userId);
+  assertEquals(result, true);
+});
+
+Deno.test("userIdExists() - user ID does not exist", async () => {
+  const userId = 9999;
+  const result = await userIdExists(userId);
+  assertEquals(result, false);
+});
