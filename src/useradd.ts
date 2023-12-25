@@ -47,7 +47,7 @@ export async function userExists(
     return false;
   }
 
-  if (res.stdout.includes("unkown user")) {
+  if (res.stdout.includes("unknown user")) {
     return false;
   }
 
