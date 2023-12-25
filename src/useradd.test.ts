@@ -1,5 +1,5 @@
 import { simpleExec } from "https://deno.land/x/simple_exec@1.0.1/mod.ts";
-import { groupExists } from "./useradd.ts";
+import { getGroupName, groupExists } from "./useradd.ts";
 import { assert } from "https://deno.land/std@0.210.0/assert/mod.ts";
 
 Deno.test(`getent - root group exists`, async () => {
@@ -22,4 +22,9 @@ Deno.test(`getent - group does not exist`, async () => {
 Deno.test(`groupExists() - group does not exist`, async () => {
   const result = await groupExists(10001);
   assert(result === false);
+});
+
+Deno.test(`getGroupName() - with root group, id 0`, async () => {
+  const result = await getGroupName(0);
+  assert(result === "root");
 });

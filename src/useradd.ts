@@ -26,13 +26,14 @@ export async function groupExists(gid: number): Promise<boolean> {
 }
 
 export async function getGroupName(gid: number): Promise<string | undefined> {
-  try {
-    const result = (await simpleExec(`getent`, [`group ${gid}`])).stdout;
-    const groupName = result.split(":")[0];
-    return groupName;
-  } catch {
+  if (!(await groupExists(gid))) {
     return undefined;
   }
+  const res = await simpleExec(`getent`, [`group`, `${gid}`]);
+
+  const stdout = res.stdout;
+  const groupName = stdout.split(":")[0];
+  return groupName;
 }
 
 export async function userExists(
