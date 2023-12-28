@@ -133,12 +133,17 @@ async function main() {
     }
 
     // creates the user, either with predefined user.gid or with a new group with same id as the generated user
-    simpleExec(`adduser`, [
+    const gidParamArray = user.gid ? [`-G`, `${getGroupName(user.gid)}`] : [];
+    const res = await simpleExec(`adduser`, [
       `-h`,
       user.home,
-      `-s /bin/zsh`,
-      user.gid ? `-G  ${getGroupName(user.gid)}` : ``,
+      `-s`,
+      `/bin/zsh`,
+      ...gidParamArray,
       `-u ${user.uid} ${user.username}`,
     ]);
+
+    console.debug(res.stdout);
+    console.debug(res.stderr);
   }
 }
